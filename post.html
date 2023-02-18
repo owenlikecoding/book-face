@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make a post</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@300&family=JetBrains+Mono:wght@200;300;400&family=Merriweather:wght@300&family=Montserrat:wght@800&family=Nabla&family=Noto+Sans+JP:wght@100&family=Open+Sans:wght@500;800&family=Orbitron&family=Raleway:wght@200&family=Seymour+One&family=Sigmar+One&family=Source+Code+Pro&family=Unbounded&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div id="top">
+        <img src="./Facebook-logo.png" alt="" style="transform: scaleX(-1); width: 15vh; ">
+    </div>
+    <div id="cont">
+        <h2>Write a post</h2>
+        <textarea name="" cols="30" rows="10" style="height: 30vh;" id="text"></textarea>
+        <input id="img" style="color: rgb(52, 52, 192);" placeholder="Add Img By url (or dont)">
+        <button id="post">Post</button>
+    </div>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        #top {
+            background-color: transparent;
+            height: 15vh;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 1.5px solid black;
+        }
+
+        #cont {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 40vh;
+            width: 40%;
+            margin-left: 30%;
+            border: 1.5px solid black;
+            border-radius: 10px;
+            margin-top: 5%;
+        }
+
+        input,
+        textarea {
+            width: 50%;
+            height: 5vh;
+            margin-top: 2%;
+            border: 1.5px solid black;
+            border-radius: 5px;
+            padding-left: 5px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        button {
+            width: 50%;
+            height: 5vh;
+            margin-top: 2%;
+            border: 1.5px solid black;
+            border-radius: 5px;
+            background-color: transparent;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        #bottom-bar {
+            /* put fixed at bottom of page */
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #f5f5f5;
+            padding: 10px;
+            box-sizing: border-box;
+            border-top: 1px solid #ccc;
+            text-align: center;
+
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-analytics.js";
+        import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqqLs4hR1uwMcQKTpQkKZ0vRcKO7cUeJI",
+            authDomain: "bookface-96b39.firebaseapp.com",
+            projectId: "bookface-96b39",
+            storageBucket: "bookface-96b39.appspot.com",
+            messagingSenderId: "528814377295",
+            appId: "1:528814377295:web:60a5feaf477031d103dd3a",
+            measurementId: "G-NS181H88PW"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+        const usersRef = ref(db);
+        const postRef = ref(db, 'posts');
+        var text = document.getElementById('text');
+        var img = document.getElementById('img');
+        var post = document.getElementById('post');
+        post.addEventListener('click', () => {
+
+            get(ref(db, "number/")).then((snapshot) => {
+                if (snapshot.exists()) {
+                    console.log(snapshot.val());
+                    var num = snapshot.val().num;
+                    var newNum = num - 1;
+                    var post = {
+                        text: text.value,
+                        img: img.value,
+                        likes: 0,
+                        comments: "Comments: ",
+                        by: window.localStorage.getItem("username"),
+                        id: newNum
+                    }
+                    set(ref(db, "number/"), {
+                        num: newNum
+                    });
+                    set(ref(db, "posts/" + newNum), post);
+                } else {
+                    console.log("No data available");
+                }
+            }).catch((error) => {
+                console.error(error);
+            });
+            // await for the post to be added
+            setTimeout(() => {
+                window.location.href = "./index.html";
+            }, 1000);
+        });
+
+    </script>
+</body>
+
+</html>
